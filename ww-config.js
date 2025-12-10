@@ -39,6 +39,12 @@ export default {
       event: { errors: [] },
       default: true,
     },
+    {
+      name: 'node-loaded',
+      label: { en: 'On Node Loaded' },
+      event: { nodeId: '', nodeType: '' },
+      default: true,
+    },
   ],
   properties: {
     // Settings Section

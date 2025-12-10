@@ -385,8 +385,50 @@ export default {
       emit('trigger-event', { name: 'panel-closed', event: {} });
     };
 
-    // Expose methods for external use
+    // Programmatic methods for external calls
+    const setNodeData = (nodeData) => {
+      if (nodeData && typeof nodeData === 'object' && nodeData.id) {
+        const nodeType = nodeData.type || '';
+        const nodeConfig = nodeData.data || {};
+        const defaultConfig = getDefaultConfig(nodeType);
+        const mergedConfig = { ...deepClone(defaultConfig), ...deepClone(nodeConfig) };
+        
+        editingConfig.value = mergedConfig;
+        originalConfig.value = deepClone(mergedConfig);
+        
+        setEditingConfigVar(mergedConfig);
+        setCurrentNodeType(nodeType);
+        setHasChanges(false);
+        setValidationErrors([]);
+        setIsValid(true);
+        
+        emit('trigger-event', { name: 'node-loaded', event: { nodeId: nodeData.id, nodeType } });
+      }
+    };
+
+    const clearNodeData = () => {
+      editingConfig.value = {};
+      originalConfig.value = {};
+      setEditingConfigVar({});
+      setCurrentNodeType('');
+      setHasChanges(false);
+      setValidationErrors([]);
+      setIsValid(true);
+      emit('trigger-event', { name: 'panel-closed', event: {} });
+    };
+
+    const getConfig = () => {
+      return deepClone(editingConfig.value);
+    };
+
+    // Expose methods for external use (Component Actions)
     expose({
+      // Data actions
+      setNodeData,      // Call to load a node for editing
+      clearNodeData,    // Call to clear/close the sidebar
+      getConfig,        // Get current config without saving
+      
+      // Edit actions
       save: handleSave,
       cancel: handleCancel,
       validate,
